@@ -1,0 +1,302 @@
+МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+
+
+
+
+Звіт
+з лабораторної роботи 2
+з дисципліни «Програмування під Android»
+   
+
+
+
+
+
+Виконав:                                                                   Перевірив:
+ст. гр. ПЗПІ-23-2                       			ст. викладач кафедри ПІ
+Горбатюк Єгор Андрійович			 	Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+Харків 2024
+
+ЗАВДАННЯ
+
+Розробити редактор, у якому з допомогою трьох регуляторів SeekBar встановлюється колір панелі.
+Регулятори визначають RGB компоненти кольору панелі. Зовнішній вигляд екрану редактора повинен залежати від орієнтації пристроя. У портретній орієнтації пристроя, регулятори повинні знаходитися знизу від панелі, займати 1/3 висоти і розташовуватися на всю ширину екрану. У ланшафтній – праворуч від панелі і займати 1/3 ширини. Решту екрану повинна займати кольорова панель.
+
+ 
+ХІД РОБОТИ
+	Створюємо новий проект, вибираємо Empty Activity, мову програмування Java.
+	Почнемо розробку зі створення двух різних файлів розмітки:
+-	Файл для портретної орієнтації: res/layout/activity_main.xml.
+У цьому макеті регулятори SeekBar розташовані внизу екрану, під панеллю кольору, та займають 1/3 висоти. Повний код розмітки можна побачити у ДОДАТКУ А
+-	Файл для ландшафтної орієнтації: res/layout-land/activity_main.xml.
+У цьому макеті регулятори розташовані праворуч від панелі кольору та займають 1/3 ширини. Повний код розмітки можна побачити у ДОДАТКУ Б
+
+Потім створимо логіку додатку у файлі MainActivity.java. Для початку у классі MainActivity оголошуємо змінні для:
+
+- colorPanel: Це елемент інтерфейсу типу FrameLayout, який буде використано для відображення кольорової панелі.
+- seekBarRed, seekBarGreen, seekBarBlue: Це три регулятори (SeekBar), які відповідають за керування червоним, зеленим та синім компонентами кольору.
+
+1. private FrameLayout colorPanel;
+2. private SeekBar seekBarRed, seekBarGreen, seekBarBlue;
+	
+	Усередині автоматично створенного методу OnCreate(),
+Робимо ініціалізацію елементів за їх ідентифікаторами:
+
+1. colorPanel = findViewById(R.id.color_panel);
+2. seekBarRed = findViewById(R.id.seekBarRed);
+3. seekBarGreen = findViewById(R.id.seekBarGreen);
+4. seekBarBlue = findViewById(R.id.seekBarBlue);
+
+ColorPanel отримує посилання на елемент FrameLayout, який відображає кольорову панель.
+SeekBarRed, seekBarGreen, seekBarBlue — це три регулятори, які використовуються для зміни компонент кольору (червоний, зелений, синій).
+
+Потім змінимо вбудований метод onProgressChanged: він викликається щоразу, коли змінюється положення повзунка. У цьому методі ми викликаємо updateColorPanel(), щоб оновити колір панелі відповідно до нових значень RGB.
+
+1. SeekBar.OnSeekBarChangeListener colorChangeListener = new 2.SeekBar.OnSeekBarChangeListener() {
+3.     @Override
+4.    public void onProgressChanged(SeekBar seekBar, int progress, boolean 5.fromUser) {
+6.        updateColorPanel();
+7.    }
+
+	Тепер створимо слухач colorChangeListener для кожного з регуляторів (seekBarRed, seekBarGreen, seekBarBlue). Коли користувач змінює значення на будь-якому з повзунків, метод onProgressChanged буде викликаний, і колір панелі оновиться.
+
+   1. seekBarRed.setOnSeekBarChangeListener(colorChangeListener);
+   2. seekBarGreen.setOnSeekBarChangeListener(colorChangeListener);
+   3. seekBarBlue.setOnSeekBarChangeListener(colorChangeListener);
+4. }
+
+	Після цього створимо метод updateColorPanel(),
+Де зробимо змінні red, gree, blue, які будуть отримувати поточні значення повзунків seekBar свого кольору і зберігати числа от 0 до 255. Потім змінна color за допомогою методу color.rgb який приймає три аргументи – наші значення червоного, зеленого та синього буде генерувати ціле число, яке представляє колір у форматі rgb. Це значення ми передаємо у setBackgroundColor елементу colorPanel щоб змінити колір панелі. Повний код можна подивить у ДОДАТКУ В.
+
+1. private void updateColorPanel() {
+2.    int red = seekBarRed.getProgress();
+3.    int green = seekBarGreen.getProgress();
+4.    int blue = seekBarBlue.getProgress();
+5.
+6.    int color = Color.rgb(red, green, blue);
+7.    colorPanel.setBackgroundColor(color);
+8. }
+
+
+ 
+ВИСНОВКИ
+
+У ході виконання лабораторної роботи було створено додаток для зміни кольору панелі за допомогою трьох регуляторів SeekBar, які керують компонентами кольору RGB. Інтерфейс адаптовано для різних орієнтацій екрана, що забезпечує зручність використання в портретному та ландшафтному режимах.
+Відеозвіт з лабороторної роботи: https://youtu.be/4r61fb8B9aA
+
+
+
+
+
+ 
+ВИКОРИСТАНІ ДЖЕРЕЛА
+
+1.	Курс «Програмування під андроід». Dl nure: https://dl.nure.ua/course/view.php?id=24148
+2.	Офіційний сайт Android developer: https://developer.android.com/
+
+
+ 
+ДОДАТОК А
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Панель кольору-->
+    <FrameLayout
+        android:id="@+id/color_panel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp" 
+        android:layout_weight="2"
+        android:background="#FFFFFF" />
+
+    <!-- Контейнер для регуляторів -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Регулятор червоного кольору -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Red"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+            <SeekBar
+                android:id="@+id/seekBarRed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:layout_margin="8dp"
+                />
+        </LinearLayout>
+
+        <!-- Регулятор зеленого кольору -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Green"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+            <SeekBar
+                android:id="@+id/seekBarGreen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:layout_margin="8dp" />
+        </LinearLayout>
+
+        <!-- Регулятор синього кольору -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blue"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+            <SeekBar
+                android:id="@+id/seekBarBlue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:layout_margin="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
+ 
+ДОДАТОК Б
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <!-- Панель кольору -->
+    <FrameLayout
+        android:id="@+id/color_panel"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:background="#FFFFFF" />
+
+    <!-- Контейнер для регуляторів-->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Регулятор червоного кольору -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Red"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+            <SeekBar
+                android:id="@+id/seekBarRed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:layout_margin="8dp" />
+        </LinearLayout>
+
+        <!-- Регулятор зеленого кольору -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Green"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+            <SeekBar
+                android:id="@+id/seekBarGreen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:layout_margin="8dp" />
+        </LinearLayout>
+
+        <!-- Регулятор синього кольору -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blue"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+            <SeekBar
+                android:id="@+id/seekBarBlue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:layout_margin="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
