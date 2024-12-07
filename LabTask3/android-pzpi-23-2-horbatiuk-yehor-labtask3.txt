@@ -1,0 +1,550 @@
+МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+
+
+
+
+Звіт
+з лабораторної роботи 3
+з дисципліни «Програмування під Android»
+   
+
+
+
+
+
+Виконав:                                                                   Перевірив:
+ст. гр. ПЗПІ-23-2                       			ст. викладач кафедри ПІ
+Горбатюк Єгор Андрійович			 	Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+Харків 2024
+
+ЗАВДАННЯ
+
+Розробити калькулятор на 4 базові арифметичні операції з кнопками для введення аргументів і дій.
+Калькулятор повинен мати адаптивний користувацький інтерфейс у різних орієнтаціях екрану та на екранах різної роздільної здатності.
+
+ 
+ХІД РОБОТИ
+
+Створюємо новий проект в Android Studio з типом Empty Activity. Вибираємо мову програмування Java.
+
+Починаємо розробку з розмітки інтерфейсу. Для цього використовуємо TextView для відображення результату і Button для цифр та арифметичних операцій. Повний код розмітки можна побачити у ДОДАТКУ А.
+Розробимо ще одну размітку для ландшафтної орієнтаціі, інтерфейс якої буде більш оптимізованою для горизонтального положення пристрою. Повний код розмітки можна побачити у ДОДАТКУ Б
+	Потім перейдемо до логіки додатку Спочатку в класі MainActivity оголошуємо змінні для полів і кнопок:
+
+1. private TextView tvResult;
+2. private String currentNumber = "";
+3. private String previousNumber = "";
+4. private String operation = "";
+5. private boolean isNewOperation = true;
+
+Тут:
+-	tvResult — це поле для відображення результату.
+-	currentNumber — це рядок для поточного числа.
+-	previousNumber — це рядок для попереднього числа.
+-	operation — це змінна, яка містить поточну операцію.
+-	isNewOperation — прапор для визначення нового обчислення.
+-	
+Далі в методі onCreate() ініціалізуємо кнопки і встановлюємо обробники подій для цифр і операцій:
+
+1. @Override
+2. protected void onCreate(Bundle savedInstanceState) {
+3.     super.onCreate(savedInstanceState);
+4.     setContentView(R.layout.activity_main);
+5.
+6.     tvResult = findViewById(R.id.tvResult);
+7.
+8.     // Налаштування кнопок
+9.     setNumberButtonListeners();
+10.    setOperationButtonListeners();
+11. }
+
+Створюємо метод setNumberButtonListeners(), який додає обробку натискання кнопок для цифр:
+
+1. private void setNumberButtonListeners() {
+2.    Button btn0 = findViewById(R.id.btn0);
+3.    Button btn1 = findViewById(R.id.btn1);
+4.    Button btn2 = findViewById(R.id.btn2);
+5.    Button btn3 = findViewById(R.id.btn3);
+6.    Button btn4 = findViewById(R.id.btn4);
+7.    Button btn5 = findViewById(R.id.btn5);
+8.    Button btn6 = findViewById(R.id.btn6);
+9.    Button btn7 = findViewById(R.id.btn7);
+10.    Button btn8 = findViewById(R.id.btn8);
+11.    Button btn9 = findViewById(R.id.btn9);
+12.
+13.
+14.   View.OnClickListener listener = view -> {
+15.        Button button = (Button) view;
+16.        if (isNewOperation) {
+17.            currentNumber = "";
+18.            isNewOperation = false;
+19.        }
+20.        currentNumber += button.getText().toString();
+21.        tvResult.setText(currentNumber);
+22.    };
+23.
+24.
+25.    btn0.setOnClickListener(listener);
+26.    btn1.setOnClickListener(listener);
+27.    btn2.setOnClickListener(listener);
+28.    btn3.setOnClickListener(listener);
+29.    btn4.setOnClickListener(listener);
+30.    btn5.setOnClickListener(listener);
+31.    btn6.setOnClickListener(listener);
+32.    btn7.setOnClickListener(listener);
+33.    btn8.setOnClickListener(listener);
+34.    btn9.setOnClickListener(listener);
+35.}
+
+Створюємо метод setOperationButtonListeners(), який додає обробку натискання кнопок для операцій:
+
+1. private void setOperationButtonListeners() {
+2.    Button btnAdd = findViewById(R.id.btnAdd);
+3.    Button btnSubtract = findViewById(R.id.btnSubtract);
+4.    Button btnMultiply = findViewById(R.id.btnMultiply);
+5.    Button btnDivide = findViewById(R.id.btnDivide);
+6.    Button btnEquals = findViewById(R.id.btnEquals);
+7.
+8.
+9.    btnAdd.setOnClickListener(this::onOperationClick);
+10.    btnSubtract.setOnClickListener(this::onOperationClick);
+11.    btnMultiply.setOnClickListener(this::onOperationClick);
+12.    btnDivide.setOnClickListener(this::onOperationClick);
+13.    btnEquals.setOnClickListener(this::onOperationClick);
+14.
+15.
+16.    findViewById(R.id.btnClear).setOnClickListener(view -> {
+17.        currentNumber = "";
+18.        previousNumber = "";
+19.        operation = "";
+20.        tvResult.setText("0");
+21.    });
+22.}
+
+
+Коли користувач натискає кнопку операції, викликається метод onOperationClick(), який виконує обчислення:
+
+1. private void onOperationClick(View view) {
+2.     Button button = (Button) view;
+3.     String op = button.getText().toString();
+4.
+5.     if (!op.equals("=")) {
+6.         operation = op;
+7.         previousNumber = currentNumber;
+8.         currentNumber = "";
+9.     } else {
+10.        double num1 = Double.parseDouble(previousNumber);
+11.        double num2 = Double.parseDouble(currentNumber);
+12.
+13.        double result = 0;
+14.        switch (operation) {
+15.            case "+":
+16.                result = num1 + num2;
+17.                break;
+18.            case "-":
+19.                result = num1 - num2;
+20.                break;
+21.            case "*":
+22.                result = num1 * num2;
+23.                break;
+24.            case "/":
+25.                result = num2 != 0 ? num1 / num2 : 0; // Уникнення ділення на 0
+26.                break;
+27.        }
+28.
+29.        tvResult.setText(String.valueOf(result));
+30.        currentNumber = String.valueOf(result);
+31.        isNewOperation = true;
+32.    }
+33. }
+Повний код файлу MainActivity.java можно подивитись, у ДОДАТКУ В
+ 
+ВИСНОВКИ
+
+Під час виконання лабораторної роботи було створено додаток калькулятора, що підтримує базові арифметичні операції. Було реалізовано обробку натискання кнопок для цифр і операцій, а також додано обробник подій для обчислення результатів. Посилання на відеозвіт: https://youtu.be/HKGqNtg0AJQ
+
+
+
+
+
+ 
+ВИКОРИСТАНІ ДЖЕРЕЛА
+
+1.	Курс «Програмування під андроід». Dl nure: https://dl.nure.ua/course/view.php?id=24148
+2.	Офіційний сайт Android developer: https://developer.android.com/
+
+
+ 
+ДОДАТОК А
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- Поле для результат -->
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/darker_gray"
+        android:gravity="end"
+        android:padding="16dp"
+        android:text="0"
+        android:textColor="#455A64"
+        android:textSize="36sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Панель кнопок -->
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:stretchColumns="*"
+        app:layout_constraintTop_toBottomOf="@id/tvResult"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <!-- Стрічка кнопок: 7, 8, 9, / -->
+        <TableRow>
+            <Button android:id="@+id/btn7" android:layout_width="0dp" android:layout_height="wrap_content" android:text="7" />
+            <Button android:id="@+id/btn8" android:layout_width="0dp" android:layout_height="wrap_content" android:text="8" />
+            <Button android:id="@+id/btn9" android:layout_width="0dp" android:layout_height="wrap_content" android:text="9" />
+            <Button android:id="@+id/btnDivide" android:layout_width="0dp" android:layout_height="wrap_content" android:text="/" />
+        </TableRow>
+
+        <!-- Стрічка кнопок: 4, 5, 6, * -->
+        <TableRow>
+            <Button android:id="@+id/btn4" android:layout_width="0dp" android:layout_height="wrap_content" android:text="4" />
+            <Button android:id="@+id/btn5" android:layout_width="0dp" android:layout_height="wrap_content" android:text="5" />
+            <Button android:id="@+id/btn6" android:layout_width="0dp" android:layout_height="wrap_content" android:text="6" />
+            <Button android:id="@+id/btnMultiply" android:layout_width="0dp" android:layout_height="wrap_content" android:text="*" />
+        </TableRow>
+
+        <!-- Стрічка кнопок: 1, 2, 3, - -->
+        <TableRow>
+            <Button android:id="@+id/btn1" android:layout_width="0dp" android:layout_height="wrap_content" android:text="1" />
+            <Button android:id="@+id/btn2" android:layout_width="0dp" android:layout_height="wrap_content" android:text="2" />
+            <Button android:id="@+id/btn3" android:layout_width="0dp" android:layout_height="wrap_content" android:text="3" />
+            <Button android:id="@+id/btnSubtract" android:layout_width="0dp" android:layout_height="wrap_content" android:text="-" />
+        </TableRow>
+
+        <!-- Стрічка кнопок: C, 0, =, + -->
+        <TableRow>
+            <Button android:id="@+id/btnClear" android:layout_width="0dp" android:layout_height="wrap_content" android:text="C" />
+            <Button android:id="@+id/btn0" android:layout_width="0dp" android:layout_height="wrap_content" android:text="0" />
+            <Button android:id="@+id/btnEquals" android:layout_width="0dp" android:layout_height="wrap_content" android:text="=" />
+            <Button android:id="@+id/btnAdd" android:layout_width="0dp" android:layout_height="wrap_content" android:text="+" />
+        </TableRow>
+
+    </TableLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+ 
+ДОДАТОК Б 
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/darker_gray"
+        android:gravity="end"
+        android:padding="16dp"
+        android:text="0"
+        android:textColor="#455A64"
+        android:textSize="36sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/tableLayout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:stretchColumns="*"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/tvResult"
+        app:layout_constraintRight_toRightOf="parent">
+
+        <!-- Строчка кнопок: 7, 8, 9, / -->
+        <TableRow>
+            <Button android:id="@+id/btn7" android:layout_width="0dp" android:layout_height="wrap_content" android:text="7" />
+            <Button android:id="@+id/btn8" android:layout_width="0dp" android:layout_height="wrap_content" android:text="8" />
+            <Button android:id="@+id/btn9" android:layout_width="0dp" android:layout_height="wrap_content" android:text="9" />
+            <Button android:id="@+id/btnDivide" android:layout_width="0dp" android:layout_height="wrap_content" android:text="/" />
+        </TableRow>
+
+        <!-- Строчка кнопок: 4, 5, 6, * -->
+        <TableRow>
+            <Button android:id="@+id/btn4" android:layout_width="0dp" android:layout_height="wrap_content" android:text="4" />
+            <Button android:id="@+id/btn5" android:layout_width="0dp" android:layout_height="wrap_content" android:text="5" />
+            <Button android:id="@+id/btn6" android:layout_width="0dp" android:layout_height="wrap_content" android:text="6" />
+            <Button android:id="@+id/btnMultiply" android:layout_width="0dp" android:layout_height="wrap_content" android:text="*" />
+        </TableRow>
+
+        <!-- Строчка кнопок: 1, 2, 3, - -->
+        <TableRow>
+            <Button android:id="@+id/btn1" android:layout_width="0dp" android:layout_height="wrap_content" android:text="1" />
+            <Button android:id="@+id/btn2" android:layout_width="0dp" android:layout_height="wrap_content" android:text="2" />
+            <Button android:id="@+id/btn3" android:layout_width="0dp" android:layout_height="wrap_content" android:text="3" />
+            <Button android:id="@+id/btnSubtract" android:layout_width="0dp" android:layout_height="wrap_content" android:text="-" />
+        </TableRow>
+
+        <!-- Строчка кнопок: C, 0, =, + -->
+        <TableRow>
+            <Button android:id="@+id/btnClear" android:layout_width="0dp" android:layout_height="wrap_content" android:text="C" />
+            <Button android:id="@+id/btn0" android:layout_width="0dp" android:layout_height="wrap_content" android:text="0" />
+            <Button android:id="@+id/btnEquals" android:layout_width="0dp" android:layout_height="wrap_content" android:text="=" />
+            <Button android:id="@+id/btnAdd" android:layout_width="0dp" android:layout_height="wrap_content" android:text="+" />
+        </TableRow>
+
+    </TableLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+ 
+ДОДАТОК Б
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <!-- Панель кольору -->
+    <FrameLayout
+        android:id="@+id/color_panel"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:background="#FFFFFF" />
+
+    <!-- Контейнер для регуляторів-->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Регулятор червоного кольору -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Red"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+            <SeekBar
+                android:id="@+id/seekBarRed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:layout_margin="8dp" />
+        </LinearLayout>
+
+        <!-- Регулятор зеленого кольору -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Green"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+            <SeekBar
+                android:id="@+id/seekBarGreen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:layout_margin="8dp" />
+        </LinearLayout>
+
+        <!-- Регулятор синього кольору -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Blue"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_gravity="center" />
+
+            <SeekBar
+                android:id="@+id/seekBarBlue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="255"
+                android:layout_margin="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
+
+
+ 
+ДОДАТОК В
+
+{
+
+    private TextView tvResult;
+    private String currentNumber = "";
+    private String previousNumber = "";
+    private String operation = "";
+    private boolean isNewOperation = true;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        tvResult = findViewById(R.id.tvResult);
+
+        setNumberButtonListeners();
+        setOperationButtonListeners();
+    }
+
+    private void setNumberButtonListeners() {
+        Button btn0 = findViewById(R.id.btn0);
+        Button btn1 = findViewById(R.id.btn1);
+        Button btn2 = findViewById(R.id.btn2);
+        Button btn3 = findViewById(R.id.btn3);
+        Button btn4 = findViewById(R.id.btn4);
+        Button btn5 = findViewById(R.id.btn5);
+        Button btn6 = findViewById(R.id.btn6);
+        Button btn7 = findViewById(R.id.btn7);
+        Button btn8 = findViewById(R.id.btn8);
+        Button btn9 = findViewById(R.id.btn9);
+
+
+        View.OnClickListener listener = view -> {
+            Button button = (Button) view;
+            if (isNewOperation) {
+                currentNumber = "";
+                isNewOperation = false;
+            }
+            currentNumber += button.getText().toString();
+            tvResult.setText(currentNumber);
+        };
+
+
+        btn0.setOnClickListener(listener);
+        btn1.setOnClickListener(listener);
+        btn2.setOnClickListener(listener);
+        btn3.setOnClickListener(listener);
+        btn4.setOnClickListener(listener);
+        btn5.setOnClickListener(listener);
+        btn6.setOnClickListener(listener);
+        btn7.setOnClickListener(listener);
+        btn8.setOnClickListener(listener);
+        btn9.setOnClickListener(listener);
+    }
+
+
+    private void setOperationButtonListeners() {
+        Button btnAdd = findViewById(R.id.btnAdd);
+        Button btnSubtract = findViewById(R.id.btnSubtract);
+        Button btnMultiply = findViewById(R.id.btnMultiply);
+        Button btnDivide = findViewById(R.id.btnDivide);
+        Button btnEquals = findViewById(R.id.btnEquals);
+
+
+        btnAdd.setOnClickListener(this::onOperationClick);
+        btnSubtract.setOnClickListener(this::onOperationClick);
+        btnMultiply.setOnClickListener(this::onOperationClick);
+        btnDivide.setOnClickListener(this::onOperationClick);
+        btnEquals.setOnClickListener(this::onOperationClick);
+
+
+        findViewById(R.id.btnClear).setOnClickListener(view -> {
+            currentNumber = "";
+            previousNumber = "";
+            operation = "";
+            tvResult.setText("0");
+        });
+    }
+
+
+    private void onOperationClick(View view) {
+        Button button = (Button) view;
+        String op = button.getText().toString();
+
+        if (!op.equals("=")) {
+            operation = op;
+            previousNumber = currentNumber;
+            currentNumber = "";
+        } else {
+            double num1 = Double.parseDouble(previousNumber);
+            double num2 = Double.parseDouble(currentNumber);
+
+            double result = 0;
+            switch (operation) {
+                case "+":
+                    result = num1 + num2;
+                    break;
+                case "-":
+                    result = num1 - num2;
+                    break;
+                case "*":
+                    result = num1 * num2;
+                    break;
+                case "/":
+                    result = num2 != 0 ? num1 / num2 : 0;
+                    break;
+            }
+
+            tvResult.setText(String.valueOf(result));
+            currentNumber = String.valueOf(result);
+            isNewOperation = true;
+        }
+    }
+}
