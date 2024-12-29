@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">LabTask4</string>
+    <string-array name="priorities">
+        <item>Низький</item>
+        <item>Середній</item>
+        <item>Високий</item>
+    </string-array>
+</resources>
