@@ -1,0 +1,979 @@
+МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+
+
+
+
+Звіт
+з лабораторної роботи 5
+з дисципліни «Програмування під Android»
+   
+
+
+
+
+
+Виконав:                                                                   Перевірив:
+ст. гр. ПЗПІ-23-2                       			ст. викладач кафедри ПІ
+Горбатюк Єгор Андрійович			 	Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+Харків 2024
+
+ЗАВДАННЯ
+
+Доповнити завдання №4 наступними функціями:
+	реалізувати різне відображення для портретної та ланшафтної орієнтації екрану за допомогою тих самих фрагментів;
+	створити дві редаговані теми (тло, гарнітура шрифту, колір тексту тощо) і застосовувати їх в залежності від налаштувань програми.
+	додати можливість задавати в налаштуваннях програми розмір шрифту.
+Переробити завдання №4 так, щоб дані нотаток зберігалися у базі даних SQLite.
+
+
+ 
+ХІД РОБОТИ
+Так як лабораторна робота дуже обширна і велика, у ході роботи буде перелічено основний функціонал і призначення методів і полів классів. Повний код проекта можна подивитися або у додатках, або на GitHub.
+
+BaseActivity.java
+ Методи:
+1. onCreate(Bundle savedInstanceState)
+- Ініціалізує активність
+- Створює менеджер налаштувань
+- Встановлює тему додатка залежно від збережених налаштувань
+
+2. onCreateOptionsMenu(Menu menu)
+- Створює меню у верхній частині екрана
+- Додає пункти меню з ресурсів додатка
+
+3. onOptionsItemSelected(MenuItem item)
+- Обробляє натискання на пункти меню
+- Запускає активність налаштувань при виборі відповідного пункту
+
+4. updateTheme(boolean isDark)
+- Оновлює тему додатка
+- Перемикає між темною та світлою темою
+
+ DatabaseHelper.java
+
+Методи:
+1. DatabaseHelper(Context context)
+- Конструктор класу
+- Ініціалізує базу даних із заданим ім'ям та версією
+
+2. onCreate(SQLiteDatabase db)
+- Викликається при першому створенні бази даних
+- Створює таблицю для зберігання нотаток з потрібними полями
+
+3. onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+- Викликається при оновленні версії бази даних
+- Видаляє стару таблицю і створює нову
+
+NoteAdapter.java
+
+Методи:
+1. NoteAdapter(List<Note> noteList, OnNoteListener onNoteListener)
+- Конструктор адаптера
+- Приймає список нотаток та слухач натискань
+
+2. onCreateViewHolder(ViewGroup parent, int viewType)
+- Створює новий холдер для елемента списку
+- Роздуває layout для окремої нотатки
+
+3. onBindViewHolder(NoteViewHolder holder, int position)
+- Заповнює холдер даними конкретної нотатки
+- Встановлює текст, зображення, пріоритет
+- Налаштовує розмір шрифту відповідно до налаштувань
+
+4. getItemCount()
+- Повертає кількість нотаток у списку
+
+5. onClick(View v) (у класі NoteViewHolder)
+- Обробляє натискання на нотатку
+- Викликає відповідний колбек
+ Note.java
+
+ Методи:
+1. Note(long id, String title, String description, int priority, String dateTime, String imagePath)
+- Конструктор класу нотатки
+- Ініціалізує всі поля нотатки
+
+2. Гетери та сетери для всіх полів:
+- getId()/setId()
+- getTitle()/setTitle()
+- getDescription()/setDescription()
+- getPriority()/setPriority()
+- getDateTime()/setDateTime()
+- getImagePath()/setImagePath()
+
+3. equals(Object o)
+- Порівнює нотатки за їх ID
+
+4. hashCode()
+- Генерує хеш-код на основі ID нотатки
+
+ EditNoteActivity.java
+
+ Методи:
+1. onCreate(Bundle savedInstanceState)
+- Ініціалізує активність редагування
+- Налаштовує всі UI елементи
+- Завантажує дані існуючої нотатки, якщо вона редагується
+
+2. initializeViews()
+- Знаходить всі необхідні View за їх ID
+- Ініціалізує поля класу
+
+3. setupSpinnerAdapter()
+- Налаштовує адаптер для спінера пріоритетів
+- Встановлює список можливих пріоритетів
+
+4. loadExistingNote()
+- Завантажує дані існуючої нотатки з Intent
+- Заповнює поля форми цими даними
+
+5. setupButtonListeners()
+- Встановлює обробники натискань на кнопки
+- Налаштовує дії для збереження та вибору зображення
+
+6. openGallery()
+- Відкриває галерею для вибору зображення
+- Запускає Intent для отримання зображення
+
+7. onActivityResult()
+- Обробляє результат вибору зображення
+- Зберігає шлях до вибраного зображення
+
+8. saveNote()
+- Збирає дані з усіх полів форми
+- Зберігає або оновлює нотатку в базі даних
+- Повертає результат до головної активності
+
+9. saveNoteToDatabase()
+- Зберігає нову нотатку в базу даних
+- Повертає ID створеної нотатки
+
+10. updateNoteInDatabase()
+- Оновлює існуючу нотатку в базі даних
+
+SettingsActivity.java
+Методи:
+1. onCreate(Bundle savedInstanceState)
+- Ініціалізує активність налаштувань
+- Налаштовує перемикачі теми та розміру шрифту
+- Встановлює поточні значення налаштувань
+
+2. recreate()
+- Перестворює активність без мерехтіння
+- Застосовує нові налаштування
+
+3. getFontSizeRadioId(int fontSize)
+- Перетворює числове значення розміру шрифту в ID радіокнопки
+
+4. getFontSizeValue(int radioId)
+- Перетворює ID радіокнопки в числове значення розміру шрифту
+
+5. onBackPressed()
+- Обробляє натискання кнопки "Назад"
+- Повідомляє головну активність про зміну налаштувань
+
+SettingsManager.java
+ Методи:
+1. SettingsManager(Context context)
+- Конструктор класу
+- Ініціалізує SharedPreferences для зберігання налаштувань
+2. setDarkTheme(boolean isDark)
+- Зберігає налаштування темної теми
+3. isDarkTheme()
+- Повертає поточне налаштування теми
+
+4. setFontSize(int size)
+- Зберігає налаштування розміру шрифту
+
+5. getFontSize()
+- Повертає поточний розмір шрифту
+
+6. getFontScale()
+- Перетворює розмір шрифту в масштабний коефіцієнт
+
+MainActivity.java
+
+Методи:
+1. onCreate(Bundle savedInstanceState)
+- Ініціалізує головну активність
+- Налаштовує RecyclerView для списку нотаток
+- Завантажує нотатки з бази даних
+
+2. onOptionsItemSelected(MenuItem item)
+- Обробляє вибір пунктів меню
+- Запускає активність налаштувань
+
+3. loadNotesFromDatabase()
+- Завантажує всі нотатки з бази даних
+- Створює список об'єктів Note
+
+4. onActivityResult()
+- Обробляє результати від інших активностей
+- Оновлює список нотаток при створенні/редагуванні
+- Оновлює UI при зміні налаштувань
+
+5. onCreateContextMenu()
+- Створює контекстне меню для нотатки
+- Додає пункти редагування та видалення
+
+6. onContextItemSelected()
+- Обробляє вибір пунктів контекстного меню
+- Запускає редагування або видалення нотатки
+
+7. editNote()
+- Відкриває активність редагування з даними вибраної нотатки
+
+8. deleteNote()
+- Видаляє вибрану нотатку з бази даних та списку
+
+9. onConfigurationChanged()
+- Обробляє зміну конфігурації пристрою
+- Перестворює активність при зміні теми системи 
+ВИСНОВКИ
+У результаті виконання лабораторної роботи було модифіковано додаток для роботи з нотатками. Було додано редагування теми, виставлення розміру шрифту(Маленький, Середній, Великий), а також було перероблена логіка програми, тепер додатки зберігаються у базі даних SQLLite і зберігаються між перезапуском додатку.
+Посилання на відеозвіт: https://youtu.be/urVI4tpQuz4
+
+
+
+
+
+ 
+ВИКОРИСТАНІ ДЖЕРЕЛА
+
+1.	Курс «Програмування під андроід». Dl nure: 
+2.	Офіційний сайт Android developer: https://developer.android.com/
+
+
+ 
+ДОДАТОК А
+
+package com.example.myapplication;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+
+public class BaseActivity extends AppCompatActivity {
+    protected SettingsManager settingsManager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        settingsManager = new SettingsManager(this);
+
+        if (settingsManager.isDarkTheme()) {
+            setTheme(R.style.AppTheme_Dark);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void updateTheme(boolean isDark) {
+        if (isDark) {
+            setTheme(R.style.AppTheme_Dark);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
+    }
+}
+
+ 
+ДОДАТОК Б 
+package com.example.myapplication;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class DatabaseHelper extends SQLiteOpenHelper {
+    private static final String DATABASE_NAME = "notes.db";
+    private static final int DATABASE_VERSION = 1;
+
+    public static final String TABLE_NOTES = "notes";
+    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_TITLE = "title";
+    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_PRIORITY = "priority";
+    public static final String COLUMN_DATETIME = "datetime";
+    public static final String COLUMN_IMAGE_PATH = "image_path";
+
+    private static final String TABLE_CREATE =
+            "CREATE TABLE " + TABLE_NOTES + " (" +
+                    COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_TITLE + " TEXT, " +
+                    COLUMN_DESCRIPTION + " TEXT, " +
+                    COLUMN_PRIORITY + " INTEGER, " +
+                    COLUMN_DATETIME + " TEXT, " +
+                    COLUMN_IMAGE_PATH + " TEXT);";
+
+    public DatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(TABLE_CREATE);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);
+        onCreate(db);
+    }
+}
+
+ 
+ДОДАТОК В
+
+package com.example.myapplication;
+
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Spinner;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
+public class EditNoteActivity extends BaseActivity {
+    private EditText titleEditText;
+    private EditText descriptionEditText;
+    private Spinner prioritySpinner;
+    private ImageView noteImageView;
+    private Button chooseImageButton;
+    private String imagePath = "";
+    private long noteId = -1;
+    public static final String EXTRA_NOTE_ID = "note_id";
+    public static final String EXTRA_NOTE_POSITION = "note_position";
+    private static final int REQUEST_CODE_PICK_IMAGE = 3;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_note);
+
+        initializeViews();
+        setupSpinnerAdapter();
+        loadExistingNote();
+        setupButtonListeners();
+    }
+
+    private void initializeViews() {
+        titleEditText = findViewById(R.id.edit_note_title);
+        descriptionEditText = findViewById(R.id.edit_note_description);
+        prioritySpinner = findViewById(R.id.edit_note_priority);
+        noteImageView = findViewById(R.id.note_image_view);
+        chooseImageButton = findViewById(R.id.button_choose_image);
+    }
+
+    private void setupSpinnerAdapter() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.priorities, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        prioritySpinner.setAdapter(adapter);
+    }
+
+    private void loadExistingNote() {
+        Intent intent = getIntent();
+        if (intent.hasExtra("title")) {
+            noteId = intent.getLongExtra(EXTRA_NOTE_ID, -1);
+            titleEditText.setText(intent.getStringExtra("title"));
+            descriptionEditText.setText(intent.getStringExtra("description"));
+            prioritySpinner.setSelection(intent.getIntExtra("priority", 0) - 1);
+
+            String receivedImagePath = intent.getStringExtra("imagePath");
+            if (receivedImagePath != null && !receivedImagePath.isEmpty()) {
+                imagePath = receivedImagePath;
+                try {
+                    Uri imageUri = Uri.parse(imagePath);
+                    noteImageView.setImageURI(imageUri);
+                } catch (Exception e) {
+                    noteImageView.setImageResource(android.R.drawable.ic_menu_gallery);
+                    imagePath = "";
+                }
+            }
+        }
+    }
+
+    private void setupButtonListeners() {
+        chooseImageButton.setOnClickListener(v -> openGallery());
+        findViewById(R.id.button_save).setOnClickListener(v -> saveNote());
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_PICK_IMAGE && data != null) {
+            Uri selectedImageUri = data.getData();
+            if (selectedImageUri != null) {
+                imagePath = selectedImageUri.toString();
+                noteImageView.setImageURI(null);
+                noteImageView.setImageURI(selectedImageUri);
+            }
+        }
+    }
+
+    private void saveNote() {
+        String title = titleEditText.getText().toString();
+        String description = descriptionEditText.getText().toString();
+        int priority = prioritySpinner.getSelectedItemPosition() + 1;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, 2);
+        String currentDateTime = sdf.format(calendar.getTime());
+
+        long newId;
+        if (noteId != -1) {
+
+            updateNoteInDatabase(title, description, priority, currentDateTime);
+            newId = noteId;
+        } else {
+
+            newId = saveNoteToDatabase(title, description, priority, currentDateTime);
+        }
+
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(EXTRA_NOTE_ID, newId);
+        resultIntent.putExtra("title", title);
+        resultIntent.putExtra("description", description);
+        resultIntent.putExtra("priority", priority);
+        resultIntent.putExtra("dateTime", currentDateTime);
+        resultIntent.putExtra("imagePath", imagePath);
+        resultIntent.putExtra(EXTRA_NOTE_POSITION, getIntent().getIntExtra(EXTRA_NOTE_POSITION, -1));
+
+        setResult(RESULT_OK, resultIntent);
+        finish();
+    }
+
+    private long saveNoteToDatabase(String title, String description, int priority, String dateTime) {
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_TITLE, title);
+        values.put(DatabaseHelper.COLUMN_DESCRIPTION, description);
+        values.put(DatabaseHelper.COLUMN_PRIORITY, priority);
+        values.put(DatabaseHelper.COLUMN_DATETIME, dateTime);
+        values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
+
+        long newId = db.insert(DatabaseHelper.TABLE_NOTES, null, values);
+        db.close();
+        return newId;
+    }
+
+    private void updateNoteInDatabase(String title, String description, int priority, String dateTime) {
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_TITLE, title);
+        values.put(DatabaseHelper.COLUMN_DESCRIPTION, description);
+        values.put(DatabaseHelper.COLUMN_PRIORITY, priority);
+        values.put(DatabaseHelper.COLUMN_DATETIME, dateTime);
+        values.put(DatabaseHelper.COLUMN_IMAGE_PATH, imagePath);
+
+        db.update(DatabaseHelper.TABLE_NOTES,
+                values,
+                DatabaseHelper.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(noteId)});
+        db.close();
+    }
+}
+
+ДОДАТОК Г
+
+package com.example.myapplication;
+
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
+import java.util.List;
+import android.content.res.Configuration;
+
+public class MainActivity extends BaseActivity {
+    private static final int REQUEST_CODE_EDIT_NOTE = 1;
+    private static final int REQUEST_SETTINGS = 2;
+    private RecyclerView recyclerView;
+    private NoteAdapter adapter;
+    private List<Note> notes;
+    private int selectedPosition;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+
+        if (savedInstanceState != null) {
+            return;
+        }
+
+        setContentView(R.layout.activity_main);
+
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        notes = loadNotesFromDatabase();
+        adapter = new NoteAdapter(notes, position -> {
+            selectedPosition = position;
+            registerForContextMenu(recyclerView);
+            recyclerView.showContextMenu();
+        });
+        recyclerView.setAdapter(adapter);
+
+        findViewById(R.id.button_add_note).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, EditNoteActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_EDIT_NOTE);
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivityForResult(intent, REQUEST_SETTINGS);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private List<Note> loadNotesFromDatabase() {
+        List<Note> notes = new ArrayList<>();
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(DatabaseHelper.TABLE_NOTES, null, null, null, null, null, null);
+        while (cursor.moveToNext()) {
+            try {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
+                String title = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TITLE));
+                String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESCRIPTION));
+                int priority = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PRIORITY));
+                String dateTime = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DATETIME));
+                String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_IMAGE_PATH));
+
+                notes.add(new Note(id, title, description, priority, dateTime, imagePath));
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+        }
+        cursor.close();
+        db.close();
+
+        return notes;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_SETTINGS && resultCode == RESULT_OK) {
+            if (data != null && data.getBooleanExtra("settings_changed", false)) {
+                recreate();
+            }
+        } else if (requestCode == REQUEST_CODE_EDIT_NOTE && resultCode == RESULT_OK && data != null) {
+            long noteId = data.getLongExtra(EditNoteActivity.EXTRA_NOTE_ID, -1);
+            String title = data.getStringExtra("title");
+            String description = data.getStringExtra("description");
+            int priority = data.getIntExtra("priority", 1);
+            String dateTime = data.getStringExtra("dateTime");
+            String imagePath = data.getStringExtra("imagePath");
+            int position = data.getIntExtra(EditNoteActivity.EXTRA_NOTE_POSITION, -1);
+
+            Note note = new Note(noteId, title, description, priority, dateTime, imagePath);
+
+            if (position == -1) {
+
+                notes.add(note);
+                adapter.notifyItemInserted(notes.size() - 1);
+                recyclerView.scrollToPosition(notes.size() - 1);
+            } else {
+
+                notes.set(position, note);
+                adapter.notifyItemChanged(position);
+            }
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("Обрати дію");
+        menu.add(0, v.getId(), 0, "Редагувати");
+        menu.add(0, v.getId(), 1, "Видалити");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if (item.getTitle().equals("Редагувати")) {
+            editNote();
+            return true;
+        } else if (item.getTitle().equals("Видалити")) {
+            deleteNote();
+            return true;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void editNote() {
+        Note note = notes.get(selectedPosition);
+        Intent intent = new Intent(MainActivity.this, EditNoteActivity.class);
+        intent.putExtra(EditNoteActivity.EXTRA_NOTE_ID, note.getId());
+        intent.putExtra("title", note.getTitle());
+        intent.putExtra("description", note.getDescription());
+        intent.putExtra("priority", note.getPriority());
+        intent.putExtra("dateTime", note.getDateTime());
+        intent.putExtra("imagePath", note.getImagePath());
+        intent.putExtra(EditNoteActivity.EXTRA_NOTE_POSITION, selectedPosition);
+        startActivityForResult(intent, REQUEST_CODE_EDIT_NOTE);
+    }
+
+    private void deleteNote() {
+        Note note = notes.get(selectedPosition);
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        db.delete(DatabaseHelper.TABLE_NOTES,
+                DatabaseHelper.COLUMN_ID + " = ?",
+                new String[]{String.valueOf(note.getId())});
+
+        db.close();
+
+        notes.remove(selectedPosition);
+        adapter.notifyItemRemoved(selectedPosition);
+        Toast.makeText(this, "Нотатку видалено!", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if ((newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK) !=
+                (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)) {
+            recreate();
+        }
+    }
+}
+
+ 
+ДОДАТОК Ґ
+package com.example.myapplication;
+
+public class Note {
+    private long id;
+    private String title;
+    private String description;
+    private int priority;
+    private String dateTime;
+    private String imagePath;
+
+    public Note(long id, String title, String description, int priority, String dateTime, String imagePath) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.dateTime = dateTime;
+        this.imagePath = imagePath;
+    }
+
+    public long getId() { return id; }
+    public void setId(long id) { this.id = id; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public int getPriority() { return priority; }
+    public void setPriority(int priority) { this.priority = priority; }
+    public String getDateTime() { return dateTime; }
+    public void setDateTime(String dateTime) { this.dateTime = dateTime; }
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Note note = (Note) o;
+        return id == note.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
+}
+
+ 
+ДОДАТОК Д
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
+
+    private List<Note> noteList;
+    private OnNoteListener onNoteListener;
+
+    public NoteAdapter(List<Note> noteList, OnNoteListener onNoteListener) {
+        this.noteList = noteList;
+        this.onNoteListener = onNoteListener;
+    }
+
+    @NonNull
+    @Override
+    public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note, parent, false);
+        return new NoteViewHolder(view, onNoteListener);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
+        Note note = noteList.get(position);
+
+        holder.noteTitle.setText(note.getTitle());
+        holder.noteDateTime.setText(note.getDateTime());
+        holder.noteDescription.setText(note.getDescription());
+
+        if (note.getImagePath() != null && !note.getImagePath().isEmpty()) {
+            try {
+                holder.noteIcon.setImageURI(Uri.parse(note.getImagePath()));
+            } catch (Exception e) {
+                holder.noteIcon.setImageResource(android.R.drawable.ic_menu_gallery);
+            }
+        } else {
+            holder.noteIcon.setImageResource(android.R.drawable.ic_menu_gallery);
+        }
+
+        switch (note.getPriority()) {
+            case 1:
+                holder.notePriority.setImageResource(android.R.drawable.star_off);
+                break;
+            case 2:
+                holder.notePriority.setImageResource(android.R.drawable.star_on);
+                break;
+            case 3:
+                holder.notePriority.setImageResource(android.R.drawable.btn_star_big_on);
+                break;
+            default:
+                holder.notePriority.setImageResource(android.R.drawable.ic_menu_help);
+                break;
+        }
+
+        float fontScale = new SettingsManager(holder.itemView.getContext()).getFontScale();
+        holder.noteTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16 * fontScale);
+        holder.noteDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14 * fontScale);
+        holder.noteDateTime.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12 * fontScale);
+
+        Context context = holder.itemView.getContext();
+        TypedValue typedValue = new TypedValue();
+        context.getTheme().resolveAttribute(android.R.attr.textColor, typedValue, true);
+        int textColor = typedValue.data;
+
+        holder.noteTitle.setTextColor(textColor);
+        holder.noteDescription.setTextColor(textColor);
+    }
+
+    @Override
+    public int getItemCount() {
+        return noteList.size();
+    }
+
+    public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        TextView noteTitle, noteDateTime, noteDescription;
+        ImageView noteIcon, notePriority;
+        OnNoteListener onNoteListener;
+
+        public NoteViewHolder(@NonNull View itemView, OnNoteListener onNoteListener) {
+            super(itemView);
+            noteTitle = itemView.findViewById(R.id.note_title);
+            noteDateTime = itemView.findViewById(R.id.note_date_time);
+            noteDescription = itemView.findViewById(R.id.note_description);
+            noteIcon = itemView.findViewById(R.id.note_icon);
+            notePriority = itemView.findViewById(R.id.note_priority);
+            this.onNoteListener = onNoteListener;
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (onNoteListener != null) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    onNoteListener.onNoteClick(position);
+                }
+            }
+        }
+    }
+
+    public interface OnNoteListener {
+        void onNoteClick(int position);
+    }
+}
+ 
+Додаток Е
+package com.example.myapplication;
+
+import android.os.Bundle;
+import android.widget.RadioGroup;
+import android.widget.Switch;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import android.content.Intent;
+
+public class SettingsActivity extends AppCompatActivity {
+    private SettingsManager settingsManager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        settingsManager = new SettingsManager(this);
+        if (settingsManager.isDarkTheme()) {
+            setTheme(R.style.AppTheme_Dark);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+
+        Switch themeSwitch = findViewById(R.id.theme_switch);
+        RadioGroup fontSizeGroup = findViewById(R.id.font_size_group);
+
+
+        themeSwitch.setChecked(settingsManager.isDarkTheme());
+        fontSizeGroup.check(getFontSizeRadioId(settingsManager.getFontSize()));
+
+        themeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            settingsManager.setDarkTheme(isChecked);
+
+            recreate();
+        });
+
+        fontSizeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            int fontSize = getFontSizeValue(checkedId);
+            settingsManager.setFontSize(fontSize);
+
+            recreate();
+        });
+    }
+
+    @Override
+    public void recreate() {
+        final Intent intent = getIntent();
+        overridePendingTransition(0, 0);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        super.recreate();
+        overridePendingTransition(0, 0);
+    }
+
+    private int getFontSizeRadioId(int fontSize) {
+        switch (fontSize) {
+            case 0: return R.id.radio_small;
+            case 2: return R.id.radio_large;
+            default: return R.id.radio_medium;
+        }
+    }
+
+    private int getFontSizeValue(int radioId) {
+        if (radioId == R.id.radio_small) return 0;
+        if (radioId == R.id.radio_large) return 2;
+        return 1;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("settings_changed", true);
+        setResult(RESULT_OK, resultIntent);
+        super.onBackPressed();
+    }
+}
+ 
+ДОДАТОК Є
+package com.example.myapplication;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+public class SettingsManager {
+    private static final String PREF_NAME = "app_settings";
+    private static final String KEY_THEME = "theme_mode";
+    private static final String KEY_FONT_SIZE = "font_size";
+
+    private SharedPreferences preferences;
+
+    public SettingsManager(Context context) {
+        preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    }
+
+    public void setDarkTheme(boolean isDark) {
+        preferences.edit().putBoolean(KEY_THEME, isDark).apply();
+    }
+
+    public boolean isDarkTheme() {
+        return preferences.getBoolean(KEY_THEME, false);
+    }
+
+    public void setFontSize(int size) {
+        preferences.edit().putInt(KEY_FONT_SIZE, size).apply();
+    }
+
+    public int getFontSize() {
+        return preferences.getInt(KEY_FONT_SIZE, 1); // 0 - small, 1 - medium, 2 - large
+    }
+
+    public float getFontScale() {
+        switch (getFontSize()) {
+            case 0: return 0.8f;
+            case 2: return 1.2f;
+            default: return 1.0f;
+        }
+    }
+}

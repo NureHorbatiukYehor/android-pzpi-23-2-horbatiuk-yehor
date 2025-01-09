@@ -1,0 +1,136 @@
+МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+
+
+
+
+Звіт
+з практичної роботи №1
+з дисципліни «Програмування під Android»
+   
+
+
+
+
+
+Виконав:                                                                   Перевірив:
+ст. гр. ПЗПІ-23-2                       			ст. викладач кафедри ПІ
+Горбатюк Єгор Андрійович			 	Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+Харків 2024
+
+ЗАВДАННЯ
+1.	Встановлення Android Studio	
+2.	Створення мінімального Android застосунку
+3.	Створення GitHub репозиторію та публікація коду застосунку
+
+ 
+ХІД РОБОТИ
+Практичне заняття розпочалося з ознайомлення з процесом завантаження, встановлення та налаштування Android Studio, офіційного середовища розробки для створення Android-застосунків. Я самостійно завантажив Android Studio з офіційного вебсайту, перевірив відповідність системним вимогам і запустив інсталяційний файл. У процесі встановлення я погодився з умовами ліцензії, вибрав компоненти для встановлення (Android SDK, AVD Manager) і налаштував директорію для програми та SDK. Після завершення встановлення виконав налаштування інтерфейсу, перевірив оновлення компонентів Android SDK і створив емулятор Android.
+Наступним етапом стало створення мінімального Android-застосунку. Я відкрив Android Studio, створив новий проєкт, обравши шаблон Empty Activity, та визначив основну інформацію: назву, ім’я пакету, мову програмування (Java) і мінімальну версію Android SDK. Ознайомився зі структурою проєкту, зокрема з файлами MainActivity.java, activity_main.xml і AndroidManifest.xml. Для запуску застосунку я налаштував емулятор і здійснив компіляцію та запуск проєкту.
+Далі я розширив інтерфейс застосунку - додав кнопку та напис у файл activity_main.xml(повний код можна подивитися у додатку Б): 
+1. <TextView
+2.    android:id="@+id/textView"
+3.    android:layout_width="wrap_content"
+4.    android:layout_height="wrap_content"
+5.    android:text="Pract Task1"
+6.    android:textSize="24sp"
+7.    android:textColor="@android:color/black"
+8.    android:layout_marginBottom="16dp"/>
+
+9. <Button
+10.    android:id="@+id/button"
+11.   android:layout_width="wrap_content"
+12.    android:layout_height="wrap_content"
+13.    android:text="Click me"/>
+Після цього я додав прив’язку до макету та обробник натискання на кнопку, щоб текст змінювався у MainActivity.java (повний код можна подивитися у додатку А):
+
+1. setContentView(R.layout.activity_main);
+2. 
+3. TextView textView = findViewById(R.id.textView);
+4. Button button = findViewById(R.id.button);
+5.
+6. button.setOnClickListener(v -> textView.setText("Pract task1 text changed"));
+
+Окремо я виконав налаштування системи контролю версій Git в Android Studio. Переконавшись у встановленому Git, я інтегрував його у свій проєкт. Створив локальний репозиторій, виконав перший коміт і підключив його до віддаленого репозиторію на GitHub. Далі успішно опублікував свій проєкт на GitHub, перевіривши доступність файлів у веб-інтерфейсі.
+На завершальному етапі я вніс зміни до проєкту, виконав нові коміти та повторно публікував оновлення на GitHub. Це дозволило мені зрозуміти процес роботи з версіями коду та забезпечити його збереження. 
+ 
+
+ВИСНОВКИ
+У результаті виконання роботи я освоїв процес завантаження, встановлення та налаштування Android Studio, створення мінімального Android-застосунку, налаштування емулятора та взаємодію з елементами інтерфейсу. Також я отримав навички роботи з Git, створення локального репозиторію, підключення до GitHub і публікації проєкту. Це дозволило мені закріпити знання з роботи в середовищі розробки та системі контролю версій, а також отримати базовий досвід створення і запуску Android-застосунків.
+Відеозвіт(URL): https://youtu.be/oXy3p7Wol74
+
+
+
+
+
+ 
+ВИКОРИСТАНІ ДЖЕРЕЛА
+
+1.	Курс «Програмування під андроід». Dl nure: 
+2.	Офіційний сайт Android developer: https://developer.android.com/
+3.	DL nure «Програмування під андроїд» методичні вказівки до практичних занять: https://dl.nure.ua/mod/page/view.php?id=599587
+
+ 
+ДОДАТОК А
+package horbatiuk.yehor.nure;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        TextView textView = findViewById(R.id.textView);
+        Button button = findViewById(R.id.button);
+
+        button.setOnClickListener(v -> textView.setText("Pract task1 text changed"));
+    }
+}
+ 
+ДОДАТОК Б
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pract Task1"
+        android:textSize="24sp"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click me"/>
+</LinearLayout>
