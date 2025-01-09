@@ -1,0 +1,348 @@
+МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+
+
+КАФЕДРА ПРОГРАМНОЇ ІНЖЕНЕРІЇ
+
+
+
+
+Звіт
+з практичної роботи №2
+з дисципліни «Програмування під Android»
+   
+
+
+
+
+
+Виконав:                                                                   Перевірив:
+ст. гр. ПЗПІ-23-2                       			ст. викладач кафедри ПІ
+Горбатюк Єгор Андрійович			 	Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+Харків 2024
+
+ЗАВДАННЯ
+1.	Розмітка екрана
+1.1.	Підготовка робочого середовища
+1.2.	Практика з Linear/Constraint-Layout
+1.3.	Практика з атрибутами елементів
+1.4.	Обробка подій
+2.	Файли розмітки Layout
+2.1.	Створення різних Layout
+2.2.	Практика роботи з атрибутами
+3.	Життєвий цикл та методи Activity
+3.1.	Ознайомлення з життєвим циклом Activity
+3.2.	Дослідження методів життєвого циклу
+3.3.	Вивчення поведінки Activity при зміні орієнтації екрана
+3.4.	Практичне завдання з ручного збереження стану
+3.5.	Дослідження переходу між Activity
+     3.6 Обробка завершення Activity
+ 
+ХІД РОБОТИ
+1.	РОЗМІТКА ЕКРАНА
+Через те що практична робота містить дуже забагато коду, у звіті буде надано лише його фрагменти, повний код можна подивитися на гітхабе проекту - https://github.com/NureHorbatiukYehor/android-pzpi-23-2-horbatiuk-yehor
+Я розпочав роботу зі створення нового проєкту в Android Studio. Після створення базової структури, я почав працювати з різними типами layouts для розуміння їх особливостей.
+Спочатку я створив файл linear_layout_practice.xml, де реалізував простий вертикальний LinearLayout:
+1.	<LinearLayout
+2.	android:layout_width="match_parent"
+3.	android:layout_height="match_parent"
+4.	 android:orientation="vertical"
+5.	 android:padding="16dp">
+6.	
+7.	<Button
+8.	   android:layout_width="wrap_content"
+9.	   android:layout_height="wrap_content"
+10.	   android:text="Button 1"
+11.	   android:layout_gravity="center_horizontal"/>
+Цей макет містить три кнопки різних розмірів, розташовані вертикально одна під одною.
+Далі я створив більш складний макет grid_layout_practice.xml, використовуючи GridLayout:
+1.	<GridLayout
+2.	android:layout_width="match_parent"
+3.	android:layout_height="match_parent"
+4.	android:columnCount="2"
+5.	android:padding="16dp">
+6.	
+7.	   <TextView
+8.	   android:id="@+id/textView"
+9.	   android:layout_width="wrap_content"
+10.	   android:layout_height="wrap_content"
+11.	   android:layout_columnSpan="2"
+12.	   android:text="GridLayout Practice"/>
+У цьому макеті я розмістив TextView зверху, два Button в один ряд та ImageView знизу.
+Для роботи з елементами інтерфейсу я створив відповідний клас MainActivity.java:
+1.	public class MainActivity extends AppCompatActivity {
+2.	TextView textView;
+3.	Button button1, button2;
+4.	
+5.	@Override
+6.	Protected void onCreate(Bundle savedInstanceState) {
+7.	   super.onCreate(savedInstanceState);
+8.	   setContentView(R.layout.grid_layout_practice);
+9.	
+10.	   textView = findViewById(R.id.textView);
+11.	   button1 = findViewById(R.id.button1);
+12.	   button2 = findViewById(R.id.button2);
+13.	}
+У MainActivity я додав обробники подій для кнопок:
+1.	public void onButtonClick1(View v) {
+2.	textView.setText("Це новий напис!");
+3.	textView.setTextColor(Color.RED);
+4.	Toast.makeText(this, "Текст оновлено!",  
+5.	Toast.LENGTH_SHORT).show();
+6.	}
+Також я експериментував з ConstraintLayout, створивши файл constraint_layout_practice.xml:
+1.	<androidx.constraintlayout.widget.ConstraintLayout
+2.	   android:layout_width="match_parent"
+3.	   android:layout_height="match_parent">
+4.	
+5.	 <TextView
+6.	   android:id="@+id/textView"
+7.	   android:layout_width="wrap_content"
+8.	   android:layout_height="wrap_content"
+9.	   android:text="Hello Constraint!"
+10.	   android:textSize="32sp"/>
+У цьому макеті я створив більш складну структуру з TextView, Button та ImageView, використовуючи обмеження для позиціонування елементів відносно один одного.
+Всі створені макети демонструють різні підходи до розташування елементів інтерфейсу в Android-додатку. LinearLayout показує простий вертикальний список елементів, GridLayout демонструє табличне розташування, а ConstraintLayout надає можливість створювати більш гнучкі та адаптивні інтерфейси.
+2.	ФАЙЛИ РОЗМІТКИ LAYOUT
+Я розпочав роботу над другим підпунктом зі створення нового проєкту в Android Studio з функціоналом калькулятора та реєстрації. Розробка включала створення декількох Activity та відповідних layout-файлів.
+Спочатку я створив головний екран MainActivity.java та його розмітку activity_main.xml:
+1. protected void onCreate(Bundle savedInstanceState) {
+2.     super.onCreate(savedInstanceState);
+3.     setContentView(R.layout.activity_main);
+4. 
+5.     Button button1 = findViewById(R.id.button1);
+6.     Button button2 = findViewById(R.id.button2);
+7. 
+8.     button1.setOnClickListener(v -> {
+9.         Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+10.         startActivity(intent);
+11.     });
+
+Відповідна розмітка головного екрану:
+1. <LinearLayout
+2.     android:layout_width="match_parent"
+3.     android:layout_height="match_parent"
+4.     android:orientation="vertical"
+5.     android:padding="16dp">
+6. 
+7.     <TextView
+8.         android:layout_width="wrap_content"
+9.         android:layout_height="wrap_content"
+10.         android:text="PractTask 2"
+11.         android:textSize="24sp"
+12.         android:layout_gravity="center_horizontal"/>
+
+Далі я створив екран реєстрації RegistrationActivity.java та його розмітку registration_layout.xml:
+1. public class RegistrationActivity extends AppCompatActivity {
+2.     @Override
+3.     protected void onCreate(Bundle savedInstanceState) {
+4.         super.onCreate(savedInstanceState);
+5.         setContentView(R.layout.registration_layout);
+6.     }
+7. }
+
+Розмітка екрану реєстрації:
+1. <LinearLayout
+2.     android:layout_width="match_parent"
+3.     android:layout_height="match_parent"
+4.     android:orientation="vertical"
+5.     android:padding="16dp">
+6. 
+7.     <ImageView
+8.         android:layout_width="100dp"
+9.         android:layout_height="100dp"
+10.         android:layout_gravity="center_horizontal"
+11.         android:src="@android:drawable/ic_menu_gallery"/>
+
+Створив калькулятор CalculatorActivity.java та його розмітку calculator_layout.xml:
+1. public class CalculatorActivity extends AppCompatActivity {
+2.     private TextView resultTextView;
+3. 
+4.     @Override
+5.     protected void onCreate(Bundle savedInstanceState) {
+6.         super.onCreate(savedInstanceState);
+7.         setContentView(R.layout.calculator_layout);
+8. 
+9.         resultTextView = findViewById(R.id.textViewResult);
+10. 
+11.         findViewById(R.id.btn0).setOnClickListener(new View.OnClickListener() {
+12.             @Override
+13.             public void onClick(View v) {
+14.                 resultTextView.setText("0");
+15.             }
+16.         });
+
+Розмітка калькулятора:
+1. <GridLayout
+2.     android:layout_width="match_parent"
+3.     android:layout_height="match_parent"
+4.     android:padding="16dp"
+5.     android:columnCount="4"
+6.     android:rowCount="5">
+7. 
+8.     <TextView
+9.         android:id="@+id/textViewResult"
+10.         android:layout_width="301dp"
+11.         android:layout_height="wrap_content"
+12.         android:layout_columnSpan="4"/>
+
+Додатково я експериментував з різними типами layouts:
+
+FrameLayout (frame_layout_practice.xml):
+1. <FrameLayout
+2.     android:layout_width="match_parent"
+3.     android:layout_height="match_parent"
+4.     android:background="#FFFFFF">
+5. 
+6.     <View
+7.         android:layout_width="300dp"
+8.         android:layout_height="300dp"
+9.         android:layout_gravity="center"
+10.         android:background="#FF0000" />
+
+RelativeLayout (relative_layout_practice.xml):
+1. <RelativeLayout
+2.     android:layout_width="match_parent"
+3.     android:layout_height="match_parent"
+4.     android:padding="16dp">
+5. 
+6.     <TextView
+7.         android:id="@+id/textView1"
+8.         android:layout_width="wrap_content"
+9.         android:layout_height="wrap_content"
+10.         android:text="Це RelativeLayout"/>
+
+ConstraintLayout (constraint_layout_practice.xml):
+1. <androidx.constraintlayout.widget.ConstraintLayout
+2.     android:layout_width="match_parent"
+3.     android:layout_height="match_parent">
+4. 
+5.     <TextView
+6.         android:id="@+id/title"
+7.         android:layout_width="wrap_content"
+8.         android:layout_height="wrap_content"
+9.         android:layout_marginTop="176dp"
+10.         android:text="ConstraintLayout Example"/>
+
+3.	Життєвий цикл та методи Activity
+Спочатку я створив MainActivity.java, де реалізував основну логіку додатку та відстеження життєвого циклу:
+1. protected void onCreate(Bundle savedInstanceState) {
+2.     super.onCreate(savedInstanceState);
+3.     setContentView(R.layout.activity_main);
+4.     Log.d(TAG, "onCreate called");
+5. 
+6.     editText = findViewById(R.id.editText);
+7.     counterText = findViewById(R.id.counterText);
+8.     Button btnIncrement = findViewById(R.id.btnIncrement);
+9.     Button btnNextActivity = findViewById(R.id.btnNextActivity);
+
+У методі onCreate я ініціалізував всі необхідні елементи інтерфейсу та додав логування для відстеження виклику методу. Також реалізував відновлення стану при повороті екрану:
+
+1. if (savedInstanceState != null) {
+2.     counter = savedInstanceState.getInt("counter", 0);
+3.     seconds = savedInstanceState.getInt("seconds", 0);
+4.     editText.setText(savedInstanceState.getString("editText", ""));
+5.     counterText.setText("Counter: " + counter);
+6.     timerText.setText("Timer: " + seconds + "s");
+7. }
+
+Для демонстрації роботи з таймером я створив окремий механізм, що працює у фоні:
+1. private void startTimer() {
+2.     isTimerRunning = true;
+3.     timerHandler.removeCallbacks(timerRunnable);
+4.     timerHandler.post(timerRunnable);
+5. }
+6. 
+7. private void pauseTimer() {
+8.     isTimerRunning = false;
+9.     timerHandler.removeCallbacks(timerRunnable);
+10. }
+
+Для відстеження всіх етапів життєвого циклу я додав відповідні методи з логуванням:
+1. @Override
+2. protected void onStart() {
+3.     super.onStart();
+4.     Log.d(TAG, "onStart called");
+5. }
+6. 
+7. @Override
+8. protected void onResume() {
+9.     super.onResume();
+10.     Log.d(TAG, "onResume called");
+11.     startTimer();
+12. }
+
+Для MainActivity я створив відповідну розмітку activity_main.xml:
+1. <LinearLayout
+2.     android:layout_width="match_parent"
+3.     android:layout_height="match_parent"
+4.     android:orientation="vertical"
+5.     android:padding="16dp">
+6. 
+7.     <EditText
+8.         android:id="@+id/editText"
+9.         android:layout_width="match_parent"
+10.         android:layout_height="wrap_content"
+11.         android:hint="Enter text here"/>
+
+Для демонстрації переходів між Activity я створив SecondActivity.java:
+1. public class SecondActivity extends AppCompatActivity {
+2.     private static final String TAG = "SecondActivity";
+3. 
+4.     @Override
+5.     protected void onCreate(Bundle savedInstanceState) {
+6.         super.onCreate(savedInstanceState);
+7.         setContentView(R.layout.activity_second);
+8.         Log.d(TAG, "onCreate called");
+9.     }
+
+У SecondActivity я також реалізував всі методи життєвого циклу для відстеження їх викликів:
+1. @Override
+2. protected void onStart() {
+3.     super.onStart();
+4.     Log.d(TAG, "onStart called");
+5. }
+6. 
+7. @Override
+8. protected void onResume() {
+9.     super.onResume();
+10.     Log.d(TAG, "onResume called");
+11. }
+
+Для SecondActivity створив простий інтерфейс activity_second.xml:
+1. <LinearLayout
+2.     android:layout_width="match_parent"
+3.     android:layout_height="match_parent"
+4.     android:orientation="vertical"
+5.     android:padding="16dp">
+6. 
+7.     <TextView
+8.         android:layout_width="wrap_content"
+9.         android:layout_height="wrap_content"
+10.         android:text="Second Activity"
+11.         android:textSize="24sp"/>
+Кожен метод життєвого циклу логується для відстеження послідовності їх виклику при різних сценаріях використання додатку: запуск, поворот екрану, перехід на іншу Activity, згортання додатку тощо.
+ 
+
+ВИСНОВКИ
+У ході виконання практичної роботи було досліджено основи розробки інтерфейсу Android-додатків, включаючи створення та конфігурацію різних типів розміток за допомогою XML-файлів. Це дозволило зрозуміти механізми взаємодії між різними компонентами інтерфейсу та їх атрибутами. Додатково було вивчено життєвий цикл Activity та його основні стани, що дало змогу опанувати методи управління станами Activity для забезпечення коректної роботи додатку в різних умовах використання.
+Відеозвіт(URL): https://youtu.be/qSIhWAG_EzQ
+
+
+
+
+
+ 
+ВИКОРИСТАНІ ДЖЕРЕЛА
+
+1.	Курс «Програмування під андроід». Dl nure: 
+2.	Офіційний сайт Android developer: https://developer.android.com/
+3.	DL nure «Програмування під андроїд» методичні вказівки до практичних занять: https://dl.nure.ua/mod/page/view.php?id=599587
